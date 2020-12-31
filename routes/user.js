@@ -39,13 +39,28 @@ router.post('/create', async (req, res) => {
     }
 })
 
-// delete user
-router.delete('/', async (req, res) => {
+// update user
+router.patch('/update', async (req, res) => {
 
 })
 
-// update user
-router.patch('/', async (req, res) => {
+// delete user
+router.delete('/delete', async (req, res) => {
+
+    try {
+        // TODO: Delete by ID
+        const deletedUser = await User.deleteOne({
+            discordUser: req.params.discordUser
+        })
+
+        res.json(deletedUser)
+    } catch (err) {
+        console.log(err)
+    }
+})
+
+// compare user
+router.get('/compare', async (req, res) => {
 
 })
 
