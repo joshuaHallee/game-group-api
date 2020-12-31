@@ -45,14 +45,13 @@ router.patch('/update', async (req, res) => {
 })
 
 // delete user
-router.delete('/delete', async (req, res) => {
+router.delete('/delete/:discordUser', async (req, res) => {
 
     try {
-        // TODO: Delete by ID
         const deletedUser = await User.deleteOne({
             discordUser: req.params.discordUser
         })
-
+        
         res.json(deletedUser)
     } catch (err) {
         console.log(err)
