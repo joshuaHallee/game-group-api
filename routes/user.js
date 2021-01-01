@@ -2,6 +2,7 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 const User = require('../models/User')
+const { update } = require('../models/User')
 const STEAM_API_KEY = process.env.STEAM_API_KEY
 
 async function getSteamLibrary(steamID) {
@@ -25,13 +26,13 @@ router.post('/create', async (req, res) => {
         return library.response.status
     }
 
-    const user = new User({
-        discordUser: req.body.discordUser,
-        steam64: req.body.steam64,
-        steamLibrary: library.data.response
-    })
-
     try {
+        const user = new User({
+            discordUser: req.body.discordUser,
+            steam64: req.body.steam64,
+            steamLibrary: library.data.response
+        })
+
         const savedUser = await user.save()
         res.json(savedUser)
     } catch (error) {
@@ -42,6 +43,23 @@ router.post('/create', async (req, res) => {
 // update user
 router.patch('/update', async (req, res) => {
 
+    const library = await getSteamLibrary(req.body.steam64)
+
+    if (!library.status) {
+        console.log(`There was an issue with the Steam API: Returned ${library.response.status}`)
+        return library.response.status
+    }
+
+    try {
+
+        const conditions = { discordUser: req.body.discordUser }
+        const update = { steamLibrary: library.data.response }
+        const updatedUser = await User.updateOne(conditions, update)
+
+        res.json(updatedUser)
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 // delete user
@@ -60,7 +78,7 @@ router.delete('/delete/:discordUser', async (req, res) => {
 
 // compare user
 router.get('/compare', async (req, res) => {
-
+    
 })
 
 module.exports = router
