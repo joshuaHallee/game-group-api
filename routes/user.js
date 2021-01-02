@@ -76,9 +76,40 @@ router.delete('/delete/:discordUser', async (req, res) => {
     }
 })
 
+async function lookupMultipleUsers(usersToLookup) {
+
+    const payload = []
+    console.log(usersToLookup.length)
+    console.log(usersToLookup)
+
+    for(let i = 0; i < usersToLookup.length; i++) {
+
+        let user = await User.findOne({
+            discordUser: 'SomberSauce#8129'
+        })
+
+        payload.push(user)
+    }
+
+    return payload
+}
+
 // compare user
 router.get('/compare', async (req, res) => {
-    
+
+    try {
+        let query = req.query.name
+
+        if(!Array.isArray(query)) {
+            query = [ query ]
+        }
+
+        const library = await lookupMultipleUsers(query)
+
+        res.json(library)
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 module.exports = router
