@@ -8,8 +8,9 @@ GET `/api/user/`
 ```JSON
 ```
 
-GET `/api/user/compare`
+GET `/api/user/compare?name=Foo%231234&name=Bar%231234`
 ```JSON
+Takes multiple name parameters of Discord usernames
 ```
 
 POST `/api/user/create`
