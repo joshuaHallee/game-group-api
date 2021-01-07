@@ -16,6 +16,19 @@ async function getSteamLibrary(steamID) {
     return steamLibrary
 }
 
+async function lookupMultipleUsers(discordUserQuery) {
+    const payload = []
+    for(let i = 0; i < discordUserQuery.length; i++) {
+
+        let user = await User.findOne({
+            discordUser: discordUserQuery[i]
+        })
+
+        payload.push(user)
+    }
+    return payload
+}
+
 // create user
 router.post('/create', async (req, res) => {
 
@@ -76,22 +89,16 @@ router.delete('/delete/:discordUser', async (req, res) => {
     }
 })
 
-async function lookupMultipleUsers(usersToLookup) {
-
-    const payload = []
-    console.log(usersToLookup.length)
-    console.log(usersToLookup)
-
-    for(let i = 0; i < usersToLookup.length; i++) {
-
-        let user = await User.findOne({
-            discordUser: 'SomberSauce#8129'
-        })
-
-        payload.push(user)
+async function findDuplicates(gamesList) {
+    let sorted_arr = gamesList.slice().sort()
+    let commonGames = []
+    for (let i = 0; i < sorted_arr.length; i++) {
+        if (sorted_arr[i + 1] == sorted_arr[i]) {
+            commonGames.push(sorted_arr[i])
+        }
     }
-
-    return payload
+    console.log(commonGames)
+    return commonGames
 }
 
 // compare user
@@ -99,14 +106,22 @@ router.get('/compare', async (req, res) => {
 
     try {
         let query = req.query.name
-
         if(!Array.isArray(query)) {
             query = [ query ]
         }
 
-        const library = await lookupMultipleUsers(query)
+        const result = await lookupMultipleUsers(query)
 
-        res.json(library)
+        const gamesList = []
+        result.forEach( result => {
+            result.steamLibrary.games.forEach( game => {
+                gamesList.push(game.name)
+            })
+        })
+
+        const commonGames = await findDuplicates(gamesList)
+
+        res.json(commonGames)
     } catch (err) {
         console.log(err)
     }
