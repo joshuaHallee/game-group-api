@@ -10,7 +10,7 @@ GET `/api/user/`
 
 GET `/api/user/compare?name=Foo%231234&name=Bar%231234`
 ```JSON
-Takes multiple name parameters of Discord usernames
+Takes simple or multiple name parameters of Discord usernames
 ```
 
 POST `/api/user/create`
@@ -29,10 +29,6 @@ PATCH `/api/user/update`
 }
 ```
 
-DELETE `/api/user/delete`
+DELETE `/api/user/delete/:discordUser`
 ```JSON
-{
-    "discordUser":"example#1234",
-    "steam64":"01234567890123456"
-}
 ```
